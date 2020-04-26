@@ -21,10 +21,10 @@ class DynamoDBProduct(Product):
     .. todo::
         should we have a table class instead?
     """
-    def __init__(self, *args):
+    def __init__(self, client, *args):
         Product.__init__(self, *args)
         self.table_name = "Products"
-        self.client = boto3.client(service_name='dynamodb')
+        self.client = client
 
     def putItem(self):
         """Save table in dynamo db?. Print response"""
@@ -81,7 +81,8 @@ def dynamoDbTutorial():
     asin = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(10))
     timestamp = str(calendar.timegm(time.gmtime()))
     price = str(round(random.uniform(0, 100), 2))
-    products_db = DynamoDBProduct(asin, timestamp, price)
+    client = boto3.client(service_name='dynamodb')
+    products_db = DynamoDBProduct(client, asin, timestamp, price)
 
     products_db.deleteTable()
     products_db.ensureTableDeleted()
